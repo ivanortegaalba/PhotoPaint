@@ -39,7 +39,7 @@ public class Lienzo extends javax.swing.JPanel {
     static final int RECTANGULO = 2;
     static final int ELIPSE = 3;
     
-    private Color color; //Color en el que pìntará la forma;
+    private Color color,colorRelleno; //Color en el que pìntará la forma;
     private int figura; //Figura que vamos a dibujar.
     private boolean relleno; //Esta o no rellenada
     private boolean editar;//Esta o no editandose las figuras
@@ -135,6 +135,11 @@ public class Lienzo extends javax.swing.JPanel {
     /*Cambia el color seleccionado actualmente*/
     public void setColor(Color color){
         this.color=color;
+    }
+    
+    /*Cambia el color de relleno seleccionado actualmente*/
+    public void setColorRelleno(Color color){
+        this.colorRelleno=color;
     }
     
     /*Cambia a figura con o sin relleno*/

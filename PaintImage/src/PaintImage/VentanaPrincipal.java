@@ -4,6 +4,7 @@
  */
 package PaintImage;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
@@ -20,6 +21,7 @@ import java.awt.image.RescaleOp;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import sm.image.KernelProducer;
 /**
@@ -78,15 +80,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         barraColor = new javax.swing.JPanel();
         barraEstado = new javax.swing.JLabel();
         panelColor = new javax.swing.JPanel();
-        rojoButton = new javax.swing.JButton();
-        azulButton = new javax.swing.JButton();
-        verdeButton = new javax.swing.JButton();
-        negroButton = new javax.swing.JButton();
-        blancoButton = new javax.swing.JButton();
-        amarilloButton = new javax.swing.JButton();
+        colorRellenoPanel = new javax.swing.JPanel();
+        colorPrimarioPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
+        trazoPanel = new javax.swing.JPanel();
+        grosorPanel = new javax.swing.JPanel();
         grosorSpin = new javax.swing.JSpinner();
+        discontinuidadPanel = new javax.swing.JPanel();
+        discontinuidadBox = new javax.swing.JComboBox();
         brilloPanel = new javax.swing.JPanel();
         brilloSlider = new javax.swing.JSlider();
         filtroPanel = new javax.swing.JPanel();
@@ -133,6 +134,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         ColorConvertOpMenu = new javax.swing.JMenuItem();
         UmbralizacionOPMenu = new javax.swing.JMenuItem();
         SobelOP = new javax.swing.JMenuItem();
+        NegativoMenu = new javax.swing.JMenuItem();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -144,118 +146,95 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         barraEstado.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         barraColor.add(barraEstado, java.awt.BorderLayout.PAGE_END);
 
-        rojoButton.setBackground(java.awt.Color.red);
-        rojoButton.setText(" ");
-        rojoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        panelColor.setBorder(javax.swing.BorderFactory.createTitledBorder("color/relleno"));
+
+        colorRellenoPanel.setBackground(new java.awt.Color(1, 1, 1));
+        colorRellenoPanel.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        colorRellenoPanel.setToolTipText("Color fondo");
+        colorRellenoPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                rojoButtonMouseClicked(evt);
+                colorRellenoPanelMouseClicked(evt);
             }
         });
 
-        azulButton.setBackground(java.awt.Color.blue);
-        azulButton.setText(" ");
-        azulButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                azulButtonMouseClicked(evt);
-            }
-        });
+        javax.swing.GroupLayout colorRellenoPanelLayout = new javax.swing.GroupLayout(colorRellenoPanel);
+        colorRellenoPanel.setLayout(colorRellenoPanelLayout);
+        colorRellenoPanelLayout.setHorizontalGroup(
+            colorRellenoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 21, Short.MAX_VALUE)
+        );
+        colorRellenoPanelLayout.setVerticalGroup(
+            colorRellenoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 21, Short.MAX_VALUE)
+        );
 
-        verdeButton.setBackground(new java.awt.Color(13, 255, 0));
-        verdeButton.setText(" ");
-        verdeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        colorPrimarioPanel.setBackground(new java.awt.Color(254, 254, 254));
+        colorPrimarioPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        colorPrimarioPanel.setToolTipText("Color primario\n");
+        colorPrimarioPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                verdeButtonMouseClicked(evt);
+                colorPrimarioPanelMouseClicked(evt);
             }
         });
-
-        negroButton.setBackground(new java.awt.Color(4, 2, 2));
-        negroButton.setText(" ");
-        negroButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                negroButtonMouseClicked(evt);
-            }
-        });
-
-        blancoButton.setText(" ");
-        blancoButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                blancoButtonMouseClicked(evt);
-            }
-        });
-
-        amarilloButton.setBackground(new java.awt.Color(255, 244, 0));
-        amarilloButton.setText(" ");
-        amarilloButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                amarilloButtonMouseClicked(evt);
-            }
-        });
+        colorPrimarioPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         javax.swing.GroupLayout panelColorLayout = new javax.swing.GroupLayout(panelColor);
         panelColor.setLayout(panelColorLayout);
         panelColorLayout.setHorizontalGroup(
             panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelColorLayout.createSequentialGroup()
-                .addGroup(panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelColorLayout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addComponent(rojoButton)
-                        .addGap(5, 5, 5))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelColorLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(negroButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addGroup(panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelColorLayout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addComponent(azulButton)
-                        .addGap(5, 5, 5)
-                        .addComponent(verdeButton))
-                    .addGroup(panelColorLayout.createSequentialGroup()
-                        .addComponent(blancoButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(amarilloButton)))
-                .addGap(0, 0, 0))
+                .addGap(6, 6, 6)
+                .addComponent(colorPrimarioPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(colorRellenoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelColorLayout.setVerticalGroup(
             panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelColorLayout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addGroup(panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rojoButton)
-                    .addComponent(azulButton)
-                    .addComponent(verdeButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(negroButton)
-                    .addComponent(blancoButton)
-                    .addComponent(amarilloButton)))
+                .addGroup(panelColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(colorRellenoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(colorPrimarioPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         barraColor.add(panelColor, java.awt.BorderLayout.WEST);
 
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Grosor"));
-        jPanel3.setMinimumSize(new java.awt.Dimension(60, 49));
-        jPanel3.setPreferredSize(new java.awt.Dimension(90, 56));
-        jPanel3.setLayout(new java.awt.GridBagLayout());
+        trazoPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Trazo"));
+        trazoPanel.setLayout(new java.awt.GridBagLayout());
+
+        grosorPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Grosor"));
+        grosorPanel.setLayout(new java.awt.BorderLayout());
 
         grosorSpin.setToolTipText("");
+        grosorSpin.setMaximumSize(new java.awt.Dimension(37, 30));
         grosorSpin.setName(""); // NOI18N
-        grosorSpin.setPreferredSize(new java.awt.Dimension(42, 30));
+        grosorSpin.setPreferredSize(new java.awt.Dimension(20, 30));
         grosorSpin.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 grosorSpinStateChanged(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 5;
-        jPanel3.add(grosorSpin, gridBagConstraints);
+        grosorPanel.add(grosorSpin, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.add(jPanel3);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.ipadx = 30;
+        trazoPanel.add(grosorPanel, gridBagConstraints);
+
+        discontinuidadPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Estilo"));
+        discontinuidadPanel.setLayout(new java.awt.BorderLayout());
+
+        discontinuidadBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "________", "_ _ _ _ _ ", " - · - · - ·" }));
+        discontinuidadBox.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        discontinuidadPanel.add(discontinuidadBox, java.awt.BorderLayout.PAGE_END);
+
+        trazoPanel.add(discontinuidadPanel, new java.awt.GridBagConstraints());
+
+        jPanel1.add(trazoPanel);
 
         brilloPanel.setLayout(new java.awt.BorderLayout());
 
@@ -275,7 +254,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 brilloSliderFocusLost(evt);
             }
         });
-        brilloPanel.add(brilloSlider, java.awt.BorderLayout.CENTER);
+        brilloPanel.add(brilloSlider, java.awt.BorderLayout.LINE_START);
 
         jPanel1.add(brilloPanel);
 
@@ -639,18 +618,20 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         ImagenMenu.add(SobelOP);
 
+        NegativoMenu.setText("Negativo");
+        NegativoMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NegativoMenuActionPerformed(evt);
+            }
+        });
+        ImagenMenu.add(NegativoMenu);
+
         barraMenu.add(ImagenMenu);
 
         setJMenuBar(barraMenu);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void rojoButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rojoButtonMouseClicked
-        VentanaInternaImage vi =(VentanaInternaImage)desktop.getSelectedFrame();
-        if(vi!=null) vi.getLienzo().setColor(((JButton)evt.getSource()).getBackground());
-        this.repaint();
-    }//GEN-LAST:event_rojoButtonMouseClicked
 
     private void lapizButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_lapizButtonStateChanged
         if(this.lapizButton.isSelected()){
@@ -698,36 +679,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                  vi.getLienzo().setForma(3);
         }
     }//GEN-LAST:event_ovaloButtonStateChanged
-
-    private void azulButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_azulButtonMouseClicked
-        VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
-         if(vi!=null) vi.getLienzo().setColor(((JButton)evt.getSource()).getBackground());
-        this.repaint();
-    }//GEN-LAST:event_azulButtonMouseClicked
-
-    private void verdeButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_verdeButtonMouseClicked
-        VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
-         if(vi!=null) vi.getLienzo().setColor(((JButton)evt.getSource()).getBackground());
-        this.repaint();
-    }//GEN-LAST:event_verdeButtonMouseClicked
-
-    private void negroButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_negroButtonMouseClicked
-        VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
-         if(vi!=null) vi.getLienzo().setColor(((JButton)evt.getSource()).getBackground());
-        this.repaint();
-    }//GEN-LAST:event_negroButtonMouseClicked
-
-    private void blancoButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_blancoButtonMouseClicked
-        VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
-         if(vi!=null) vi.getLienzo().setColor(((JButton)evt.getSource()).getBackground());
-        this.repaint();
-    }//GEN-LAST:event_blancoButtonMouseClicked
-
-    private void amarilloButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_amarilloButtonMouseClicked
-        VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
-        if(vi!=null) vi.getLienzo().setColor(((JButton)evt.getSource()).getBackground());
-        this.repaint();
-    }//GEN-LAST:event_amarilloButtonMouseClicked
 
     private void verMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verMenuActionPerformed
         // TODO add your handling code here:
@@ -1335,6 +1286,48 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
     }//GEN-LAST:event_CamaraMenuActionPerformed
 
+    private void NegativoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NegativoMenuActionPerformed
+        VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame()); 
+         if (vi != null) { 
+            BufferedImage imgSource = vi.getLienzo().getImage(); 
+            if(imgSource!=null){ 
+                try{ 
+                    NegativoOp neg = new NegativoOp();
+                    BufferedImage imgdest = neg.filter(imgSource, null); 
+                    vi.getLienzo().setImage(imgdest);
+                    vi.getLienzo().repaint();
+                }catch(Exception e){ 
+                    System.err.println("Error al aplicar Affine"); 
+                } 
+            }
+        }
+    }//GEN-LAST:event_NegativoMenuActionPerformed
+
+    private void colorPrimarioPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_colorPrimarioPanelMouseClicked
+         VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame()); 
+         
+            Color c = JColorChooser.showDialog(this, "Seleccion color" , this.colorPrimarioPanel.getBackground()); 
+            if(c != null) {
+                this.colorPrimarioPanel.setBackground(c);
+                if (vi != null) { 
+                vi.getLienzo().setColor(c);
+            }
+        }
+        
+    }//GEN-LAST:event_colorPrimarioPanelMouseClicked
+
+    private void colorRellenoPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_colorRellenoPanelMouseClicked
+         VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame()); 
+         
+            Color c = JColorChooser.showDialog(this, "Seleccion color" , this.colorRellenoPanel.getBackground()); 
+            if(c != null) {
+                this.colorRellenoPanel.setBackground(c);
+                if (vi != null) { 
+                vi.getLienzo().setColorRelleno(c);
+            }
+        }
+    }//GEN-LAST:event_colorRellenoPanelMouseClicked
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem AffineTransformOpMenu;
@@ -1344,27 +1337,29 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem ConvolveOPMenu;
     private javax.swing.JMenu ImagenMenu;
     private javax.swing.JMenuItem LookupOPMenu;
+    private javax.swing.JMenuItem NegativoMenu;
     private javax.swing.JMenuItem RescaleOPMenu;
     private javax.swing.JMenuItem SobelOP;
     private javax.swing.JMenuItem UmbralizacionOPMenu;
     private javax.swing.JMenuItem abrirAudioMenu;
     private javax.swing.JMenuItem abrirJMFMenu;
     private javax.swing.JMenuItem abrirMenu;
-    private javax.swing.JButton amarilloButton;
     private javax.swing.JMenu archivoMenu;
     private javax.swing.JButton aumentarButton;
-    private javax.swing.JButton azulButton;
     private javax.swing.JPanel barraColor;
     private javax.swing.JLabel barraEstado;
     private javax.swing.JMenuBar barraMenu;
-    private javax.swing.JButton blancoButton;
     private javax.swing.JPanel brilloPanel;
     private javax.swing.JSlider brilloSlider;
     private javax.swing.JButton cientButton;
+    private javax.swing.JPanel colorPrimarioPanel;
+    private javax.swing.JPanel colorRellenoPanel;
     private javax.swing.JButton contrasteButton;
     private javax.swing.JPanel contrastePanel;
     private javax.swing.JComboBox convolveBox;
     private javax.swing.JDesktopPane desktop;
+    private javax.swing.JComboBox discontinuidadBox;
+    private javax.swing.JPanel discontinuidadPanel;
     private javax.swing.JButton disminuirButton;
     private javax.swing.JButton doscientButton;
     private javax.swing.JMenu edicionMenu;
@@ -1373,17 +1368,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel filtroBoxPanel;
     private javax.swing.JPanel filtroPanel;
     private javax.swing.JMenuItem grabarAudioMenu;
+    private javax.swing.JPanel grosorPanel;
     private javax.swing.JSpinner grosorSpin;
     private javax.swing.JMenuItem guardarMenu;
     private javax.swing.ButtonGroup herramientasGrupo;
     private javax.swing.JButton iluminacionButton;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToggleButton lapizButton;
     private javax.swing.JToggleButton lineaButton;
-    private javax.swing.JButton negroButton;
     private javax.swing.JButton novButton;
     private javax.swing.JMenuItem nuevoMenu;
     private javax.swing.JButton oscuridadButton;
@@ -1392,10 +1386,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JToggleButton rectanguloButton;
     private javax.swing.JCheckBox rellenoButton;
     private javax.swing.JPanel rellenoeditarPanel;
-    private javax.swing.JButton rojoButton;
     private javax.swing.JPanel rotacionPanel;
     private javax.swing.JSlider rotacionSlider;
+    private javax.swing.JPanel trazoPanel;
     private javax.swing.JCheckBoxMenuItem verMenu;
-    private javax.swing.JButton verdeButton;
     // End of variables declaration//GEN-END:variables
 }
