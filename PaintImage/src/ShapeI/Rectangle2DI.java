@@ -18,31 +18,34 @@ import java.awt.geom.Rectangle2D;
  * @author ivan
  */
 public class Rectangle2DI extends Rectangle2D.Double{
+    
     Stroke st;
-    Color color;
-    GradientPaint gradiente;
+    Color colorBorde;
+    Paint colorRelleno;
     boolean relleno = false;
     
-    public Rectangle2DI(Stroke st,Color color) {
+    public Rectangle2DI(Stroke st,Color color){
         super();
-        this.color = color;
+        this.colorBorde = color;
         this.st = st;
-        this.gradiente = null;
+        this.colorRelleno = null;
     }
     public Rectangle2DI(Point p1, Point p2, Stroke st,Color color) {
         super(p1.x,p1.y,p2.x,p2.y);
-        this.color = color;
+        this.colorBorde = color;
         this.st = st;
-        this.gradiente = null;
+        this.colorRelleno = null;
     }
-    public Rectangle2DI(Point p1, Point p2, Stroke st,GradientPaint gradiente) {
+    public Rectangle2DI(Point p1, Point p2, Stroke st,Paint colorRelleno) {
         super(p1.x,p1.y,p2.x,p2.y);
-        this.gradiente = gradiente;
+        this.colorRelleno = colorRelleno;
         this.st = st;
+        this.relleno = true;
     }
-    public Rectangle2DI(Stroke st,GradientPaint gradiente) {
+    public Rectangle2DI(Stroke st,Paint colorRelleno) {
         super();
-        this.gradiente = gradiente;
+        this.relleno = true;
+        this.colorRelleno = colorRelleno;
         this.st = st;
     }
     public void setStroke(Stroke st){
@@ -53,24 +56,35 @@ public class Rectangle2DI extends Rectangle2D.Double{
         return st;
     }
     
-    public Paint getPaint(){
-        if(gradiente != null)
-            return gradiente;
-        else 
-            return color;
+    public Paint getColorRelleno(){
+        if(colorRelleno != null)
+            return colorRelleno;
+        else return null;
     }
-   
+    
+    public void setColorRelleno(Paint gr){
+        this.relleno = true;
+        if(gr instanceof GradientPaint){
+            this.colorRelleno = (GradientPaint)gr;
+        }else{
+            this.colorRelleno = (Color)gr;
+        }
+    }
+    public void setColorBorde(Color c){
+        this.colorBorde = c;
+    }
+    
+    public Color getColorBorde(){
+        return this.colorBorde;
+    }
     
     public boolean getRelleno(){
         return relleno;
     }
     
-    public void setPaint(Paint gr){
-        if(gr instanceof GradientPaint){
-            this.gradiente = (GradientPaint)gr;
-        }else{
-            this.color = (Color)gr;
-            this.gradiente = null;
-        }
+    public void setRelleno(boolean r){
+        this.relleno = r;
     }
+    
+    
 }

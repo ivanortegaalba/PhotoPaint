@@ -64,6 +64,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="grabarAudioMenuActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="hacerCapturaMenu">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Realizar Captura"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hacerCapturaMenuActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="CamaraMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Camara"/>
@@ -76,7 +84,7 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="edicionMenu">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Edici&#xf3;n"/>
+            <Property name="text" type="java.lang.String" value="Ver"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="verMenu">
@@ -96,35 +104,6 @@
             <Property name="text" type="java.lang.String" value="Imagen"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="AffineTransformOpMenu">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="AffineTransformOp"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="AffineTransformOpMenuActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="BandCombineOpMenu">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="BandCombineOp"/>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="UmbralizacionOPMenu">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="UmbralizacionOP"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="UmbralizacionOPMenuActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="SobelOP">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="SobelOP"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SobelOPActionPerformed"/>
-              </Events>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="duplicarMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Duplicar"/>
@@ -147,6 +126,22 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ColorConvertOpMenuActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="UmbralizacionOPMenu">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="UmbralizacionOP"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="UmbralizacionOPMenuActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="SobelOP">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="SobelOP"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SobelOPActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

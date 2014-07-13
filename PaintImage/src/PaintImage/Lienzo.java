@@ -45,8 +45,8 @@ public class Lienzo extends javax.swing.JPanel {
     static final int ELIPSE = 3;
     
     
-    private Color color,colorRelleno; //Color en el que pìntará la forma;
-    private GradientPaint gradiente;
+    private Color colorBorde; //Color en el que pìntará la forma;
+    private Paint colorRelleno;
     private int figura; //Figura que vamos a dibujar.
     private boolean relleno; //Esta o no rellenada
     private boolean editar;//Esta o no editandose las figuras
@@ -74,11 +74,12 @@ public class Lienzo extends javax.swing.JPanel {
     public Lienzo() {
         initComponents();
         this.stroke = new BasicStroke();
-        this.color = Color.BLACK;
+        this.colorBorde = Color.BLACK;
         this.relleno = false;
         this.colorRelleno = Color.WHITE;
         this.figura = 0;
         //this.imagen = new BufferedImage(300,300,BufferedImage.TYPE_INT_RGB);
+        //this.imagen.setRGB(300, 300, 255);
 
     }
     
@@ -105,12 +106,14 @@ public class Lienzo extends javax.swing.JPanel {
             if(vRectangle.size() != 0 ){
                 
                 for(Rectangle2DI s:vRectangle) {
-                    g2d.setPaint(s.getPaint());
                     g2d.setStroke(s.getStroke());
-                    if(s.getRelleno())
+                    if(s.getRelleno()){
+                        g2d.setPaint(s.getColorRelleno());
                         g2d.fill(s);
-                    else 
-                        g2d.draw(s);
+                    }
+                    g2d.setPaint(s.getColorBorde());
+                    g2d.draw(s);           
+                        
                 }
             }/*
             if(vEllipse.size() != 0 ){
@@ -179,8 +182,8 @@ public class Lienzo extends javax.swing.JPanel {
     }
     
     /*Devuelve el color seleccionado actualmente*/
-    public Paint getColor(){
-        return this.color;
+    public Paint getColorBorde(){
+        return this.colorBorde;
     }
     
     /*Cambia la forma que se va a dibujar*/
@@ -212,8 +215,8 @@ public class Lienzo extends javax.swing.JPanel {
     }
     
     /*Cambia el color seleccionado actualmente*/
-    public void setColor(Color color){
-        this.color=color;
+    public void setColorBorde(Color color){
+        this.colorBorde=color;
     }
     
     /*Cambia el color de relleno seleccionado actualmente*/
@@ -225,11 +228,12 @@ public class Lienzo extends javax.swing.JPanel {
     public void setRelleno(boolean b){
         this.relleno = b;
     }
-    public GradientPaint getGradiente(GradientPaint gr){
-        return this.gradiente;
+    
+    public Paint getColorRelleno(){
+        return this.colorRelleno;
     }
-    public void setGradiente(GradientPaint gr){
-        this.gradiente = gr;
+    public void setColorRelleno(Paint p){
+        this.colorRelleno = p;
     }
             
     public void setEditar(boolean b){
@@ -250,21 +254,20 @@ public class Lienzo extends javax.swing.JPanel {
     public void createShape(Point p1, Point p2){
         switch (figura){
             case PUNTO:
-                linea = new Line2DI(p1,p1,this.stroke,this.color);
+                linea = new Line2DI(p1,p1,this.stroke,this.colorBorde);
                 this.vLine.add(linea);
                 break;
             case LINEA:
-                linea = new Line2DI(p1,p2,this.stroke,this.color);
+                linea = new Line2DI(p1,p2,this.stroke,this.colorBorde);
                 this.vLine.add(linea);
                 break;
             case RECTANGULO:
-                rectangulo = new Rectangle2DI(this.stroke,this.color);
+                rectangulo = new Rectangle2DI(this.stroke,this.colorBorde);
                 rectangulo.setFrameFromDiagonal(p1,p2);
                 if(relleno)
-                    if(gradiente != null)
-                        rectangulo.setPaint(gradiente);
-                    else
-                        rectangulo.setPaint(color);
+                    if(colorRelleno != null)
+                        if(colorRelleno instanceof GradientPaint)
+                            rectangulo.setColorRelleno(colorRelleno);
                 this.vRectangle.add(rectangulo);
                 break;
             /*case ELIPSE:
