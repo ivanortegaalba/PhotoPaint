@@ -6,11 +6,15 @@
 
 package PaintImage;
 
+import ShapeI.*;
+import ShapeI.Line2DI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -22,6 +26,7 @@ import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -39,7 +44,9 @@ public class Lienzo extends javax.swing.JPanel {
     static final int RECTANGULO = 2;
     static final int ELIPSE = 3;
     
+    
     private Color color,colorRelleno; //Color en el que pìntará la forma;
+    private GradientPaint gradiente;
     private int figura; //Figura que vamos a dibujar.
     private boolean relleno; //Esta o no rellenada
     private boolean editar;//Esta o no editandose las figuras
@@ -47,10 +54,17 @@ public class Lienzo extends javax.swing.JPanel {
     private Stroke stroke; //strocke con el grosor de las figuras actualmente
     private ArrayList<Shape> vShape = new ArrayList(); //vector de figuras
     
+    //Array de nuevas figuras.
+    private ArrayList<Line2DI> vLine = new ArrayList(); //vector de figuras
+    private ArrayList<Rectangle2DI> vRectangle = new ArrayList(); //vector de figuras
+    private ArrayList<Ellipse2DI> vEllipse = new ArrayList(); //vector de figuras
+    private ArrayList<QuadCurve2DI> vQuadCurve = new ArrayList(); //vector de figuras
+    private ArrayList<CubicCurve2DI> vCubicCurve = new ArrayList();
+    
     //Variables de formas para ayudarnos al paso entre objetos.
     private Shape s; 
-    private Line2D linea;
-    private Rectangle2D rectangulo;
+    private Line2DI linea;
+    private Rectangle2DI rectangulo;
     private Ellipse2D elipse;
     
     //Imagenes
@@ -62,8 +76,9 @@ public class Lienzo extends javax.swing.JPanel {
         this.stroke = new BasicStroke();
         this.color = Color.BLACK;
         this.relleno = false;
+        this.colorRelleno = Color.WHITE;
         this.figura = 0;
-        this.imagen = new BufferedImage(300,300,BufferedImage.TYPE_INT_RGB);
+        //this.imagen = new BufferedImage(300,300,BufferedImage.TYPE_INT_RGB);
 
     }
     
@@ -73,8 +88,72 @@ public class Lienzo extends javax.swing.JPanel {
         if (pClick != null || pDrag != null){
             super.paint(g);
             Graphics2D g2d = (Graphics2D)g;
-            g2d.setPaint(color);
-            g2d.setStroke(stroke);
+            
+            
+            if(imagen!=null) 
+                g2d.drawImage(imagen,0,0,this);
+            
+            if(vLine.size() != 0 ){
+               
+                for(Line2DI s:vLine) {
+                    g2d.setPaint(s.getColor());
+                    g2d.setStroke(s.getStroke());
+                    g2d.draw(s);
+                    
+                }
+            }
+            if(vRectangle.size() != 0 ){
+                
+                for(Rectangle2DI s:vRectangle) {
+                    g2d.setPaint(s.getPaint());
+                    g2d.setStroke(s.getStroke());
+                    if(s.getRelleno())
+                        g2d.fill(s);
+                    else 
+                        g2d.draw(s);
+                }
+            }/*
+            if(vEllipse.size() != 0 ){
+                g2d.setPaint(s.getColor);
+                g2d.setStroke(s.getStroke());
+                for(Shape s:vShape) {
+                    g2d.draw(s);
+                    if(relleno) 
+                        g2d.fill(s);
+                    
+                }
+            }
+            if(vQuadCurve.size() != 0 ){
+                g2d.setPaint(s.getColor);
+                g2d.setStroke(s.getStroke());
+                for(Shape s:vShape) {
+                    g2d.draw(s);
+                    if(relleno) 
+                        g2d.fill(s);
+                    
+                }
+            }
+            if(vCubicCurve.size() != 0 ){
+                g2d.setPaint(s.getColor);
+                g2d.setStroke(s.getStroke());
+                for(Shape s:vShape) {
+                    g2d.draw(s);
+                    if(relleno) 
+                        g2d.fill(s);
+                    
+                }
+            }*/
+        }
+
+    }
+    /*public void paint(Graphics g){
+        //Cuidado con no usar variables que esten a null dentro del metodo paint,
+        //Ya que dejara de ejecutar el metodo y no pintará bien.
+        if (pClick != null || pDrag != null){
+            super.paint(g);
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setPaint(s.getColor);
+            g2d.setStroke(s.getStroke());
             
             if(imagen!=null) 
                 g2d.drawImage(imagen,0,0,this);
@@ -88,7 +167,7 @@ public class Lienzo extends javax.swing.JPanel {
                 }
         }
 
-    }
+    }*/
     /*Devuelve el punto de click*/
     public Point getClickPoint(){
         return this.pClick;
@@ -100,7 +179,7 @@ public class Lienzo extends javax.swing.JPanel {
     }
     
     /*Devuelve el color seleccionado actualmente*/
-    public Color getColor(){
+    public Paint getColor(){
         return this.color;
     }
     
@@ -146,7 +225,13 @@ public class Lienzo extends javax.swing.JPanel {
     public void setRelleno(boolean b){
         this.relleno = b;
     }
-    
+    public GradientPaint getGradiente(GradientPaint gr){
+        return this.gradiente;
+    }
+    public void setGradiente(GradientPaint gr){
+        this.gradiente = gr;
+    }
+            
     public void setEditar(boolean b){
         this.editar = b;
     }
@@ -165,23 +250,28 @@ public class Lienzo extends javax.swing.JPanel {
     public void createShape(Point p1, Point p2){
         switch (figura){
             case PUNTO:
-                linea = new Line2D.Double(p1,p1);
-                this.vShape.add(linea);
+                linea = new Line2DI(p1,p1,this.stroke,this.color);
+                this.vLine.add(linea);
                 break;
             case LINEA:
-                linea = new Line2D.Double(p1,p2);
-                this.vShape.add(linea);
+                linea = new Line2DI(p1,p2,this.stroke,this.color);
+                this.vLine.add(linea);
                 break;
             case RECTANGULO:
-                rectangulo = new Rectangle2D.Double();
+                rectangulo = new Rectangle2DI(this.stroke,this.color);
                 rectangulo.setFrameFromDiagonal(p1,p2);
-                this.vShape.add(rectangulo);
+                if(relleno)
+                    if(gradiente != null)
+                        rectangulo.setPaint(gradiente);
+                    else
+                        rectangulo.setPaint(color);
+                this.vRectangle.add(rectangulo);
                 break;
-            case ELIPSE:
+            /*case ELIPSE:
                 elipse = new Ellipse2D.Double();
                 elipse.setFrameFromDiagonal(p1,p2);
                 this.vShape.add(elipse);
-                break;
+                break;*/
         }
         
     }
@@ -195,21 +285,21 @@ public class Lienzo extends javax.swing.JPanel {
             case RECTANGULO:
                 rectangulo.setFrameFromDiagonal(p1,p2);
                 break;
-            case ELIPSE:
+/*            case ELIPSE:
                 elipse.setFrameFromDiagonal(p1,p2);
-                break;
+                break;*/
         }
         
     }
     /*Establece p como el x e y de origen del shape*/
     public void setLocation(Shape s, Point2D p){
-        if(s instanceof Line2D){
-            linea = (Line2D)s;
+        if(s instanceof Line2DI){
+            linea = (Line2DI)s;
             Point2D p2 = new Point2D.Double(linea.getX2() + p.getX() - linea.getX1(), linea.getY2() + p.getY() - linea.getY1());
             linea.setLine(p,p2);
         }
-        if(s instanceof Rectangle2D){
-            rectangulo = (Rectangle2D)s;
+        if(s instanceof Rectangle2DI){
+            rectangulo = (Rectangle2DI)s;
             this.rectangulo.setRect(p.getX(), p.getY(), rectangulo.getWidth(), rectangulo.getHeight());
         }
         if(s instanceof Ellipse2D){
