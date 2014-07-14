@@ -35,7 +35,6 @@ public class VentanaInternaImage extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
-        setTitle("lalala");
 
         javax.swing.GroupLayout lienzo1Layout = new javax.swing.GroupLayout(lienzo1);
         lienzo1.setLayout(lienzo1Layout);
@@ -51,6 +50,8 @@ public class VentanaInternaImage extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(lienzo1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        getAccessibleContext().setAccessibleName("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

@@ -43,14 +43,25 @@ public class Lienzo extends javax.swing.JPanel {
     static final int LINEA = 1;
     static final int RECTANGULO = 2;
     static final int ELIPSE = 3;
+    static final int CURVA_UN_PUNTO = 4;
     
+    static final int SIN_RELLENO = 0;
+    static final int RELLENO_LISO = 1;
+    static final int RELLENO_GRADIENTE_H = 2;
+    static final int RELLENO_GRADIENTE_V = 3;
     
-    private Color colorBorde; //Color en el que pìntará la forma;
-    private Paint colorRelleno;
+    static final int LINEA_CONTINUA = 0;
+    static final int LINEA_DISCONTINUA = 1;
+    static final int LINEA_PUNTEADA = 2;
+    
+    private Color color1; //Color en el que pìntará la forma;
+    private Color color2;
+    private GradientPaint gradiente;
+    private int tipoRelleno;
     private int figura; //Figura que vamos a dibujar.
-    private boolean relleno; //Esta o no rellenada
     private boolean editar;//Esta o no editandose las figuras
-    private Point pClick, pDrag; //Punto de click y punto de arrastre.
+    private boolean buscaPunto; //Indica si se esta buscando un punto de control de la curva
+    private Point pClick, pDrag, pCurve; //Punto de click y punto de arrastre.
     private Stroke stroke; //strocke con el grosor de las figuras actualmente
     private ArrayList<Shape> vShape = new ArrayList(); //vector de figuras
     
@@ -65,24 +76,33 @@ public class Lienzo extends javax.swing.JPanel {
     private Shape s; 
     private Line2DI linea;
     private Rectangle2DI rectangulo;
-    private Ellipse2D elipse;
+    private Ellipse2DI elipse;
+    private QuadCurve2DI curva;
     
     //Imagenes
     private BufferedImage imagen;
     
-    
+    /**
+     * Constructor por defecto
+     */
     public Lienzo() {
         initComponents();
         this.stroke = new BasicStroke();
-        this.colorBorde = Color.BLACK;
-        this.relleno = false;
-        this.colorRelleno = Color.WHITE;
+        this.color1 = Color.BLACK;
+        this.tipoRelleno = SIN_RELLENO;
+        this.color2 = Color.WHITE;
         this.figura = 0;
+        this.pCurve = new Point(0,0);
+        this.buscaPunto = false;
         //this.imagen = new BufferedImage(300,300,BufferedImage.TYPE_INT_RGB);
         //this.imagen.setRGB(300, 300, 255);
 
     }
-    
+    /**
+     * Se encarga de pintar todo el lienzo, con las figuras y 
+     * las imagenes que se incluyen en ellas.
+     * @param g grafico que va a pintar
+     */
     public void paint(Graphics g){
         //Cuidado con no usar variables que esten a null dentro del metodo paint,
         //Ya que dejara de ejecutar el metodo y no pintará bien.
@@ -107,180 +127,254 @@ public class Lienzo extends javax.swing.JPanel {
                 
                 for(Rectangle2DI s:vRectangle) {
                     g2d.setStroke(s.getStroke());
-                    if(s.getRelleno()){
+                    if(s.getColorRelleno()!=null){
                         g2d.setPaint(s.getColorRelleno());
                         g2d.fill(s);
                     }
                     g2d.setPaint(s.getColorBorde());
-                    g2d.draw(s);           
-                        
+                    g2d.draw(s);                                
                 }
-            }/*
+            }
             if(vEllipse.size() != 0 ){
-                g2d.setPaint(s.getColor);
-                g2d.setStroke(s.getStroke());
-                for(Shape s:vShape) {
-                    g2d.draw(s);
-                    if(relleno) 
+                for(Ellipse2DI s:vEllipse) {
+                    g2d.setStroke(s.getStroke());
+                    if(s.getColorRelleno()!=null){
+                        g2d.setPaint(s.getColorRelleno());
                         g2d.fill(s);
-                    
+                    }
+                    g2d.setPaint(s.getColorBorde());
+                    g2d.draw(s);                                
                 }
             }
             if(vQuadCurve.size() != 0 ){
-                g2d.setPaint(s.getColor);
-                g2d.setStroke(s.getStroke());
-                for(Shape s:vShape) {
+                for(QuadCurve2DI s:vQuadCurve) {
+                    g2d.setPaint(s.getColor());
+                    g2d.setStroke(s.getStroke());
                     g2d.draw(s);
-                    if(relleno) 
-                        g2d.fill(s);
                     
                 }
             }
-            if(vCubicCurve.size() != 0 ){
-                g2d.setPaint(s.getColor);
-                g2d.setStroke(s.getStroke());
-                for(Shape s:vShape) {
-                    g2d.draw(s);
-                    if(relleno) 
-                        g2d.fill(s);
-                    
-                }
-            }*/
+            
         }
 
     }
-    /*public void paint(Graphics g){
-        //Cuidado con no usar variables que esten a null dentro del metodo paint,
-        //Ya que dejara de ejecutar el metodo y no pintará bien.
-        if (pClick != null || pDrag != null){
-            super.paint(g);
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setPaint(s.getColor);
-            g2d.setStroke(s.getStroke());
-            
-            if(imagen!=null) 
-                g2d.drawImage(imagen,0,0,this);
-            
-            if(vShape.size() != 0 )
-                for(Shape s:vShape) {
-                    g2d.draw(s);
-                    if(relleno) 
-                        g2d.fill(s);
-                    
-                }
-        }
-
-    }*/
-    /*Devuelve el punto de click*/
+    /**
+     * Devuelve el punto de click
+     */
     public Point getClickPoint(){
         return this.pClick;
     }
     
-    /*Devuelve el punto de arrastrado*/
+    /**
+     * Devuelve el punto de arrastrado
+     */
     public Point getDragPoint(){
         return this.pDrag;
     }
     
-    /*Devuelve el color seleccionado actualmente*/
-    public Paint getColorBorde(){
-        return this.colorBorde;
+    /**
+     * Devuelve el color seleccionado actualmente
+    */
+    public Paint getColor1(){
+        return this.color1;
     }
     
-    /*Cambia la forma que se va a dibujar*/
+    /**
+     * Cambia la forma que se va a dibujar
+     */
     public void setForma(int i){
         this.figura = i;
     }
     
-    /*Devuelve la forma que se va a dibujar*/
+    /**
+     * Devuelve la forma que se va a dibujar
+     */
     public int getForma(){
         return this.figura;
     }
     
-    /*Devuelve si está seleccionado el relleno*/
-    public boolean getRelleno(){
-        return this.relleno;
+    /**
+     * Devuelve el tipo de relleno
+     */
+    public int getTipoRelleno(){
+        return this.tipoRelleno;
     }
-    
+    /**
+     * Devuelve la imagen contenida en el lienzo
+     */
     public BufferedImage getImage(){
         return this.imagen;
     }
-    /*Cambia el punto de click*/
-    public void setClickPoint(Point p){
-        this.pClick = p;
-    }
-    
-    /*Cambia el punto arrastrado*/
-    public void setDragPoint(Point p){
-        this.pDrag = p;
-    }
-    
-    /*Cambia el color seleccionado actualmente*/
-    public void setColorBorde(Color color){
-        this.colorBorde=color;
-    }
-    
-    /*Cambia el color de relleno seleccionado actualmente*/
-    public void setColorRelleno(Color color){
-        this.colorRelleno=color;
-    }
-    
-    /*Cambia a figura con o sin relleno*/
-    public void setRelleno(boolean b){
-        this.relleno = b;
-    }
-    
-    public Paint getColorRelleno(){
-        return this.colorRelleno;
-    }
-    public void setColorRelleno(Paint p){
-        this.colorRelleno = p;
-    }
-            
-    public void setEditar(boolean b){
-        this.editar = b;
-    }
-    
-    /*Cambia el grosor de la figura a i puntos*/
-    public void setGrosor(int i){
-        this.stroke=new BasicStroke(i);
-    }
-    
+    /**
+     * Cambia la imagen contenida en el lienzo
+     * 
+     * @param i nueva imagen que sustituirá a la anterior
+     */
     public void setImage(BufferedImage i){
         this.imagen = i;
         this.setPreferredSize(new Dimension(imagen.getWidth(),imagen.getHeight()));
     }
+    /**
+     * Cambia el punto de click
+     */
+    public void setClickPoint(Point p){
+        this.pClick = p;
+    }
     
-    /*Crea un Shape segun la figura seleccionada y lo devuelve*/
-    public void createShape(Point p1, Point p2){
-        switch (figura){
-            case PUNTO:
-                linea = new Line2DI(p1,p1,this.stroke,this.colorBorde);
-                this.vLine.add(linea);
+    /**
+     * Cambia el punto arrastrado
+     */
+    public void setDragPoint(Point p){
+        this.pDrag = p;
+    }
+    
+    /**
+     * Cambia el color seleccionado actualmente
+     */
+    public void setColor1(Color color){
+        this.color1=color;
+    }
+    
+    /**
+     * Cambia el color de relleno seleccionado actualmente
+     */
+    public void setColor2(Color color){
+        this.color2=color;
+    }
+    
+    /**
+     * Cambia a figura con o sin relleno
+     * @param b entero, que indica el tipo, puede hacerse mediante las constantes
+     * definidas en la clase Lienzo.
+     */
+    public void setTipoRelleno(int b){
+        this.tipoRelleno = b;
+    }
+    /**
+     * Obtiene el color secundario
+     */
+    public Color getColor2(){
+        return this.color2;
+    }     
+    /**
+     * Activa o desactiva la opcion editar
+     * 
+     * @param b booleano que indica si esta activo o no.
+     */
+    public void setEditar(boolean b){
+        this.editar = b;
+    }
+    
+    /**
+     * Cambia el grosor de la figura a i puntos o el estilo de linea segun las 
+     * constantes definidas en la clase Lienzo
+     * 
+     * <li>LINEA_CONTINUA = 0;</li>
+     * <li>LINEA_DISCONTINUA = 1;</li>
+     * <li>LINEA_PUNTEADA = 2;</li>
+     * 
+     * @param g entero con el grosor de la linea.
+     * @param  estiloLinea alguna de las constantes anteriores.
+     */
+    public void setEstiloLinea(int g, int estiloLinea){
+        float grosor = (int) g;
+        switch (estiloLinea){
+            case LINEA_CONTINUA:
+                stroke = new BasicStroke(grosor);
                 break;
-            case LINEA:
-                linea = new Line2DI(p1,p2,this.stroke,this.colorBorde);
-                this.vLine.add(linea);
+            case LINEA_DISCONTINUA:
+                float[] discontinua = {10.0f,4.0f};
+                stroke = new BasicStroke(grosor, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,discontinua, 5.0f);
                 break;
-            case RECTANGULO:
-                rectangulo = new Rectangle2DI(this.stroke,this.colorBorde);
-                rectangulo.setFrameFromDiagonal(p1,p2);
-                if(relleno)
-                    if(colorRelleno != null)
-                        if(colorRelleno instanceof GradientPaint)
-                            rectangulo.setColorRelleno(colorRelleno);
-                this.vRectangle.add(rectangulo);
+            case LINEA_PUNTEADA:
+                float [] punteo = {10.0f,4.0f,2.0f};
+                stroke = new BasicStroke(grosor, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,punteo, 5.0f);
                 break;
-            /*case ELIPSE:
-                elipse = new Ellipse2D.Double();
-                elipse.setFrameFromDiagonal(p1,p2);
-                this.vShape.add(elipse);
-                break;*/
         }
         
     }
     
-    /*Actualiza los puntos del Shape en creación o edición*/
-    public void updateShape(Point p1,Point p2){
+    
+    
+/**
+ * Crea un la figura con los atributos de trazo, relleno y color que hay
+ * en este instante seleccionados para la ventana donde estamos dibujando.
+ * 
+ * @param p1 punto con las coordenadas de la figura, para figuras como punto, o el comienzo
+ * de algunas figuras que necesitan más de un punto.
+ * @param p2 punto para las figuras de dos puntos, que sería el correspondiente donde
+ * deja de arrastrarse con el ratón, es decir, donde termina la figura.
+ * @param p3 Punto auxiliar para figuras como la curva con punto, donde este punto sería
+ * el punto de control.
+ */
+    public void createShape(Point p1, Point p2, Point p3){
+            switch (figura){
+            case PUNTO:
+                linea = new Line2DI(p1,p1,this.stroke,this.color1);
+                this.vLine.add(linea);
+                break;
+            case LINEA:
+                linea = new Line2DI(p1,p2,this.stroke,this.color1);
+                this.vLine.add(linea);
+                break;
+            case RECTANGULO:
+                rectangulo = new Rectangle2DI(this.stroke,this.color1);
+                rectangulo.setFrameFromDiagonal(p1,p2);
+                if(tipoRelleno > SIN_RELLENO){
+                    rectangulo.setColorRelleno(color2);
+                    if(tipoRelleno == RELLENO_GRADIENTE_H){
+                        //p1.setLocation(rectangulo.getX(),rectangulo.getY());
+                        //p2.setLocation(rectangulo.getX(),p1.getY());
+                        gradiente = new GradientPaint(p1,color1,p2,color2);
+                        
+                    }else if(tipoRelleno == Lienzo.RELLENO_GRADIENTE_V){
+                        gradiente = new GradientPaint(p1,color1,p2,color2);
+                    }
+                    if(gradiente != null )
+                    rectangulo.setColorRelleno(gradiente);
+                }
+                this.vRectangle.add(rectangulo);
+                break;
+                
+            case ELIPSE:
+                elipse = new Ellipse2DI(this.stroke,this.color1);
+                elipse.setFrameFromDiagonal(p1,p2);
+                if(tipoRelleno > SIN_RELLENO){
+                    elipse.setColorRelleno(color2);
+                    if(tipoRelleno == RELLENO_GRADIENTE_H){
+                        //p1.setLocation(elipse.getX(),elipse.getY());
+                        //p2.setLocation(elipse.getX(),p1.getY());
+                        gradiente = new GradientPaint(p1,color1,p2,color2);
+                        
+                    }else if(tipoRelleno == Lienzo.RELLENO_GRADIENTE_V){
+                        gradiente = new GradientPaint(p1,color1,p2,color2);
+                    }
+                    if(gradiente != null )
+                    elipse.setColorRelleno(gradiente);
+                }
+                this.vEllipse.add(elipse);
+                break;
+                
+            case CURVA_UN_PUNTO:
+                if(!buscaPunto){
+                        curva = new QuadCurve2DI(p1,p2,p3,this.stroke,this.color1);
+                this.vQuadCurve.add(curva);
+                }
+                break;
+        }
+        
+    }
+    
+    /**
+     * Actualiza la posición de las figuras, tanto cuando se estan creando y 
+     * estableciendo el fin de la figura, como para cuando se están editando.
+     * Tambien actualiza la posición del punto de control de las curvas.
+     * 
+     * @param p1 punto de comienzo de la figura
+     * @param p2 punto de finalización de la figura
+     * @param p3 punto auxiliar utilizado como punto de control.
+     */
+    public void updateShape(Point p1,Point p2, Point p3){
         switch (figura){
             case LINEA:
                 linea.setLine(p1,p2);
@@ -288,13 +382,22 @@ public class Lienzo extends javax.swing.JPanel {
             case RECTANGULO:
                 rectangulo.setFrameFromDiagonal(p1,p2);
                 break;
-/*            case ELIPSE:
+            case ELIPSE:
                 elipse.setFrameFromDiagonal(p1,p2);
-                break;*/
+                break;
+            case CURVA_UN_PUNTO:
+                if(buscaPunto)
+                curva.setCurve(curva.getP1(), p3, curva.getP2());
+                else 
+                    curva.setCurve(p1, p3, p2);
         }
         
     }
-    /*Establece p como el x e y de origen del shape*/
+    /**
+     * Establece p como el x e y de origen de la figura.
+     * Por el mal diseño de clases, hemos tenido que sobrecargar el método, por cada posiblidad
+     * de selección.
+     */
     public void setLocation(Shape s, Point2D p){
         if(s instanceof Line2DI){
             linea = (Line2DI)s;
@@ -305,9 +408,8 @@ public class Lienzo extends javax.swing.JPanel {
             rectangulo = (Rectangle2DI)s;
             this.rectangulo.setRect(p.getX(), p.getY(), rectangulo.getWidth(), rectangulo.getHeight());
         }
-        if(s instanceof Ellipse2D){
-            elipse = (Ellipse2D)s;
-
+        if(s instanceof Ellipse2DI){
+            elipse = (Ellipse2DI)s;
             this.elipse.setFrame(p.getX(), p.getY(), elipse.getWidth(), elipse.getHeight());
         }
     }
@@ -315,13 +417,17 @@ public class Lienzo extends javax.swing.JPanel {
     /*Devuelve el shape que esta siendo seleccionado si p esta contenido o cerca de el */
     public Shape getSelectedShape(Point p1){
         if(this.editar){
-            if( vShape.size() != 0 ){
-                    for(int i = vShape.size()-1; i >=0; i--) {
-                        if(vShape.get(i) instanceof Line2D)
-                            if(isNear((Line2D)vShape.get(i),p1))
-                                return vShape.get(i);
-                        if(vShape.get(i).contains(p1))
-                            return vShape.get(i);
+            if( vLine.size() != 0 ){
+                    for(int i = vLine.size()-1; i >=0; i--) {
+                            if(isNear((Line2DI)vLine.get(i),p1))
+                                return vLine.get(i);
+                    }
+                    
+            }
+            if( vRectangle.size() != 0 ){
+                    for(int i = vRectangle.size()-1; i >=0; i--) {
+                            if( vRectangle.get(i).contains(p1))
+                                return vLine.get(i);
                     }
                     
             }
@@ -330,7 +436,7 @@ public class Lienzo extends javax.swing.JPanel {
     }
     
     /*Devuelve si un punto esta cerca de una linea lo suficiente*/
-    private boolean isNear(Line2D linea2, Point2D p){
+    private boolean isNear(Line2DI linea2, Point2D p){
         double x = p.getX() - 1;
         double y = p.getY() - 1;
         double w = 2;
@@ -383,7 +489,10 @@ public class Lienzo extends javax.swing.JPanel {
         
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
         this.setClickPoint(evt.getPoint());
-        this.createShape(this.getClickPoint(), this.getClickPoint());
+        if(!buscaPunto){
+            this.createShape(this.pClick, this.pClick,this.pClick);
+            this.pCurve.setLocation(pClick);
+        }
         if(this.editar){
             s = this.getSelectedShape(this.getClickPoint());
         }
@@ -396,18 +505,27 @@ public class Lienzo extends javax.swing.JPanel {
                 this.setLocation(s,this.getDragPoint());
         }
         else{
-            this.updateShape(this.getClickPoint(), this.getDragPoint());
+            this.updateShape(this.getClickPoint(), this.getDragPoint(),pCurve);
+        }
+        if(figura == CURVA_UN_PUNTO && !this.buscaPunto)
+            buscaPunto = true;
+        else if(figura == CURVA_UN_PUNTO && this.buscaPunto){
+            buscaPunto = false;
         }
         repaint();
     }//GEN-LAST:event_formMouseReleased
 
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
         this.setDragPoint(evt.getPoint());
+        if(this.figura == CURVA_UN_PUNTO && buscaPunto)
+            this.pCurve.setLocation(evt.getPoint()); 
+        if(!buscaPunto)
+            this.updateShape(this.pClick, this.pDrag, this.pDrag);
         if(this.editar){
                 this.setLocation(s,this.getDragPoint());   
         }
         else
-            this.updateShape(this.getClickPoint(), this.getDragPoint());
+            this.updateShape(this.pClick, this.pDrag, this.pCurve);
         repaint();
     }//GEN-LAST:event_formMouseDragged
     

@@ -7,6 +7,7 @@
 package ShapeI;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.geom.QuadCurve2D;
@@ -24,8 +25,8 @@ public class QuadCurve2DI extends QuadCurve2D.Double{
         this.color = color;
         this.st = st;
     }
-    public QuadCurve2DI(Point p1, Point p2,Point q1, Stroke st,Color color) {
-        super(p1.x,p1.y,p2.x,p2.y,q1.x,q1.y);
+    public QuadCurve2DI(Point p1, Point p2, Point q1, Stroke st,Color color) {
+        super(p1.x,p1.y,q1.x,q1.y,p2.x,p2.y);
         this.color = color;
         this.st = st;
     }
@@ -36,7 +37,7 @@ public class QuadCurve2DI extends QuadCurve2D.Double{
     public Stroke getStroke(){
         return st;
     }
-    public Color getColor(){
+    public Paint getColor(){
         return color;
     }
     public void setColor(Color color){
