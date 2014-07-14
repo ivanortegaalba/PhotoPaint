@@ -7,8 +7,11 @@
 package PaintImage;
 
 /**
- *
- * @author ivan
+ * Encargada de lanzar el programa principal, con la VentanaPrincipal ya
+ * dispuesta.
+ * 
+ * @author Ivan Ortega Alba
+ * @version 15.07.2014
  */
 public class PaintImageMain {
 

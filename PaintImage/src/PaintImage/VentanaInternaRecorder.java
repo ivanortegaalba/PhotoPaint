@@ -10,12 +10,13 @@ import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import sm.sound.SMSoundRecorder;
 /**
- *
- * @author ivan
+ * Ventana que muestra el capturador de audio, que guardará la grabación
+ * en un archivo previamente asignado a dicha ventana mediante el constructor.
+ * 
+ * @author Ivan Ortega Alba
  */
 public class VentanaInternaRecorder extends javax.swing.JInternalFrame {
 
-    
     SMSoundRecorder recorder;
     
     /**
@@ -36,6 +37,7 @@ public class VentanaInternaRecorder extends javax.swing.JInternalFrame {
      * cambiar los iconos de forma automática.
      */
     LineListener lineListener = new LineListener(){
+        @Override
         public void update(LineEvent event) {
             if(event.getType()==LineEvent.Type.START) {
                 recordButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconosAudio/RecordDisabled_48x48.png")));

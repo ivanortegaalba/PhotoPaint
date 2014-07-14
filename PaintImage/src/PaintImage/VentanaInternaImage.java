@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package PaintImage;
 
@@ -13,7 +8,7 @@ package PaintImage;
 public class VentanaInternaImage extends javax.swing.JInternalFrame {
 
     /**
-     * Creates new form VentanaInterna
+     * Constructor por defecto
      */
     public VentanaInternaImage() {
         initComponents();
@@ -35,6 +30,23 @@ public class VentanaInternaImage extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameActivated(evt);
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
 
         javax.swing.GroupLayout lienzo1Layout = new javax.swing.GroupLayout(lienzo1);
         lienzo1.setLayout(lienzo1Layout);
@@ -51,11 +63,17 @@ public class VentanaInternaImage extends javax.swing.JInternalFrame {
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        getAccessibleContext().setAccessibleName("");
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    /*Devuelve el lienzo que está dentro de la ventana seleccionada*/
+
+    private void formInternalFrameActivated(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameActivated
+        //Meter código para modificar el aspecto.
+    }//GEN-LAST:event_formInternalFrameActivated
+    /** 
+     * Devuelve el lienzo que está dentro de la ventana seleccionada
+     * 
+     * @return lienzo de contenido en la ventana
+     */
     public Lienzo getLienzo(){
         return this.lienzo1;
     }

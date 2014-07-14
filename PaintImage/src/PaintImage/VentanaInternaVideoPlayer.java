@@ -10,9 +10,12 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javax.media.Buffer;
+import javax.media.CannotRealizeException;
 import javax.media.Manager;
 import javax.media.MediaLocator;
+import javax.media.NoPlayerException;
 import javax.media.Player;
 import javax.media.control.FrameGrabbingControl;
 import javax.media.format.VideoFormat;
@@ -29,6 +32,7 @@ public class VentanaInternaVideoPlayer extends javax.swing.JInternalFrame {
 
     
     Player p;
+    
     /**
      * Crea una ventana interna, con la barra del reproductor, y reproducirá
      * el video correspondiente al fichero que se haya abierto.
@@ -48,7 +52,7 @@ public class VentanaInternaVideoPlayer extends javax.swing.JInternalFrame {
             if(panelControl!=null)  
                 this.panelContPanel.add(panelControl,java.awt.BorderLayout.SOUTH);
             
-        } catch(Exception e) {
+        } catch(IOException | CannotRealizeException | NoPlayerException e) {
             System.err.println("Error al abrir la ventana " + e.getLocalizedMessage());
         }
     }
@@ -89,6 +93,7 @@ public class VentanaInternaVideoPlayer extends javax.swing.JInternalFrame {
     public void close(){
         p.close();
     }
+    
     /**
      * Captura la imagen que hay ahora mismo en reproduccion.
      * 

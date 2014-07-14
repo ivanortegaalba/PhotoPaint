@@ -18,15 +18,9 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 /**
  *
@@ -38,13 +32,14 @@ public class Lienzo extends javax.swing.JPanel {
      * Creates new form Lienzo
      */
     
-    //CONSTANTES ASOCIADAS A LA FIGURA ELEGIDA
+    /** Constantes asociadas a la figura seleccionada en el lienzo*/
     static final int PUNTO = 0;
     static final int LINEA = 1;
     static final int RECTANGULO = 2;
     static final int ELIPSE = 3;
     static final int CURVA_UN_PUNTO = 4;
     
+    /** Constantes asociadas al tipo de relleno*/
     static final int SIN_RELLENO = 0;
     static final int RELLENO_LISO = 1;
     static final int RELLENO_GRADIENTE_H = 2;
@@ -54,26 +49,26 @@ public class Lienzo extends javax.swing.JPanel {
     static final int LINEA_DISCONTINUA = 1;
     static final int LINEA_PUNTEADA = 2;
     
-    private Color color1; //Color en el que pìntará la forma;
-    private Color color2;
-    private GradientPaint gradiente;
-    private int tipoRelleno;
+    private Color color1; //Color de borde o primer color de degradado.
+    private Color color2; //Color secundario, para relleno o degradado.
+    private GradientPaint gradiente; //Gradiente aplicandose actualmente
+    private int tipoRelleno; //Tipo de relleno que está aplicandose a las figuras
     private int figura; //Figura que vamos a dibujar.
     private boolean editar;//Esta o no editandose las figuras
+    private Shape sp;
     private boolean buscaPunto; //Indica si se esta buscando un punto de control de la curva
     private Point pClick, pDrag, pCurve; //Punto de click y punto de arrastre.
     private Stroke stroke; //strocke con el grosor de las figuras actualmente
-    private ArrayList<Shape> vShape = new ArrayList(); //vector de figuras
     
     //Array de nuevas figuras.
-    private ArrayList<Line2DI> vLine = new ArrayList(); //vector de figuras
-    private ArrayList<Rectangle2DI> vRectangle = new ArrayList(); //vector de figuras
-    private ArrayList<Ellipse2DI> vEllipse = new ArrayList(); //vector de figuras
-    private ArrayList<QuadCurve2DI> vQuadCurve = new ArrayList(); //vector de figuras
-    private ArrayList<CubicCurve2DI> vCubicCurve = new ArrayList();
+    private final ArrayList<Line2DI> vLine = new ArrayList(); //vector de puntos y lineas
+    private final ArrayList<Rectangle2DI> vRectangle = new ArrayList(); //vector de rectangulos
+    private final ArrayList<Ellipse2DI> vEllipse = new ArrayList(); //vector de elipses
+    private final ArrayList<QuadCurve2DI> vQuadCurve = new ArrayList(); //vector de curvas con punto
+    private final ArrayList<CubicCurve2DI> vCubicCurve = new ArrayList();// vector de curvas con dos puntos
     
-    //Variables de formas para ayudarnos al paso entre objetos.
-    private Shape s; 
+    //Variables de formas para ayudarnos a dibujar las figuras
+    
     private Line2DI linea;
     private Rectangle2DI rectangulo;
     private Ellipse2DI elipse;
@@ -95,14 +90,15 @@ public class Lienzo extends javax.swing.JPanel {
         this.pCurve = new Point(0,0);
         this.buscaPunto = false;
         //this.imagen = new BufferedImage(300,300,BufferedImage.TYPE_INT_RGB);
-        //this.imagen.setRGB(300, 300, 255);
 
     }
     /**
      * Se encarga de pintar todo el lienzo, con las figuras y 
      * las imagenes que se incluyen en ellas.
+     * 
      * @param g grafico que va a pintar
      */
+    @Override
     public void paint(Graphics g){
         //Cuidado con no usar variables que esten a null dentro del metodo paint,
         //Ya que dejara de ejecutar el metodo y no pintará bien.
@@ -114,7 +110,7 @@ public class Lienzo extends javax.swing.JPanel {
             if(imagen!=null) 
                 g2d.drawImage(imagen,0,0,this);
             
-            if(vLine.size() != 0 ){
+            if(!vLine.isEmpty() ){
                
                 for(Line2DI s:vLine) {
                     g2d.setPaint(s.getColor());
@@ -123,7 +119,7 @@ public class Lienzo extends javax.swing.JPanel {
                     
                 }
             }
-            if(vRectangle.size() != 0 ){
+            if(!vRectangle.isEmpty() ){
                 
                 for(Rectangle2DI s:vRectangle) {
                     g2d.setStroke(s.getStroke());
@@ -135,7 +131,7 @@ public class Lienzo extends javax.swing.JPanel {
                     g2d.draw(s);                                
                 }
             }
-            if(vEllipse.size() != 0 ){
+            if(!vEllipse.isEmpty() ){
                 for(Ellipse2DI s:vEllipse) {
                     g2d.setStroke(s.getStroke());
                     if(s.getColorRelleno()!=null){
@@ -146,7 +142,7 @@ public class Lienzo extends javax.swing.JPanel {
                     g2d.draw(s);                                
                 }
             }
-            if(vQuadCurve.size() != 0 ){
+            if(!vQuadCurve.isEmpty() ){
                 for(QuadCurve2DI s:vQuadCurve) {
                     g2d.setPaint(s.getColor());
                     g2d.setStroke(s.getStroke());
@@ -159,52 +155,82 @@ public class Lienzo extends javax.swing.JPanel {
 
     }
     /**
-     * Devuelve el punto de click
+     * Getter
+     * 
+     * @return el punto de click
      */
     public Point getClickPoint(){
         return this.pClick;
     }
     
     /**
-     * Devuelve el punto de arrastrado
+     * Getter
+     * 
+     * @return el punto de arrastrado
      */
     public Point getDragPoint(){
         return this.pDrag;
     }
     
     /**
-     * Devuelve el color seleccionado actualmente
+     * Getter
+     * 
+     * @return color seleccionado actualmente
     */
     public Paint getColor1(){
         return this.color1;
     }
     
     /**
-     * Cambia la forma que se va a dibujar
+     * Cambia la forma que se va a dibujar.
+     * El entero que corresponde a cada forma está declarado como variable de
+     * la clase lienzo. Podrán ser:
+     * <li>PUNTO = 0</li>
+     * <li>LINEA = 1</li>
+     * <li>RECTANGULO = 2</li>
+     * <li>ELIPSE = 3</li>
+     * <li>CURVA_UN_PUNTO = 4</li>
+     * 
+     *
+     * @param i entero correspondiente a la forma que va a dibujarse
      */
     public void setForma(int i){
         this.figura = i;
     }
     
     /**
-     * Devuelve la forma que se va a dibujar
+     * Getter
+     * 
+     * @return la forma que se va a dibujar
      */
     public int getForma(){
         return this.figura;
     }
     
     /**
-     * Devuelve el tipo de relleno
+     * Getter.
+     * Devolverá un entero, correspondiente a las constantes definidas en la clase
+     * lienzo.
+     * <li>SIN_RELLENO = 0</li>
+     * <li>RELLENO_LISO = 1</li>
+     * <li>RELLENO_GRADIENTE_H = 2</li>
+     * <li>RELLENO_GRADIENTE_V = 3</li>
+     * 
+     * @return el tipo de relleno
      */
     public int getTipoRelleno(){
         return this.tipoRelleno;
     }
+    
     /**
-     * Devuelve la imagen contenida en el lienzo
+     * Getter
+     * 
+     * @return la imagen contenida en el lienzo
      */
     public BufferedImage getImage(){
         return this.imagen;
     }
+    
     /**
      * Cambia la imagen contenida en el lienzo
      * 
@@ -214,8 +240,10 @@ public class Lienzo extends javax.swing.JPanel {
         this.imagen = i;
         this.setPreferredSize(new Dimension(imagen.getWidth(),imagen.getHeight()));
     }
+    
     /**
      * Cambia el punto de click
+     * @param p nuevo punto de click
      */
     public void setClickPoint(Point p){
         this.pClick = p;
@@ -223,6 +251,8 @@ public class Lienzo extends javax.swing.JPanel {
     
     /**
      * Cambia el punto arrastrado
+     * 
+     * @param p nuevo punto de arrastrado
      */
     public void setDragPoint(Point p){
         this.pDrag = p;
@@ -230,6 +260,8 @@ public class Lienzo extends javax.swing.JPanel {
     
     /**
      * Cambia el color seleccionado actualmente
+     * 
+     * @param color nuevo color de bordes o primer color de gradiente
      */
     public void setColor1(Color color){
         this.color1=color;
@@ -237,6 +269,8 @@ public class Lienzo extends javax.swing.JPanel {
     
     /**
      * Cambia el color de relleno seleccionado actualmente
+     * 
+     * @param color nuevo color de relleno liso o segundo color de gradiente
      */
     public void setColor2(Color color){
         this.color2=color;
@@ -251,11 +285,14 @@ public class Lienzo extends javax.swing.JPanel {
         this.tipoRelleno = b;
     }
     /**
-     * Obtiene el color secundario
+     * Getter
+     * 
+     * @return el color secundario
      */
     public Color getColor2(){
         return this.color2;
     }     
+    
     /**
      * Activa o desactiva la opcion editar
      * 
@@ -267,7 +304,7 @@ public class Lienzo extends javax.swing.JPanel {
     
     /**
      * Cambia el grosor de la figura a i puntos o el estilo de linea segun las 
-     * constantes definidas en la clase Lienzo
+     * constantes definidas en la clase Lienzo.
      * 
      * <li>LINEA_CONTINUA = 0;</li>
      * <li>LINEA_DISCONTINUA = 1;</li>
@@ -296,17 +333,17 @@ public class Lienzo extends javax.swing.JPanel {
     
     
     
-/**
- * Crea un la figura con los atributos de trazo, relleno y color que hay
- * en este instante seleccionados para la ventana donde estamos dibujando.
- * 
- * @param p1 punto con las coordenadas de la figura, para figuras como punto, o el comienzo
- * de algunas figuras que necesitan más de un punto.
- * @param p2 punto para las figuras de dos puntos, que sería el correspondiente donde
- * deja de arrastrarse con el ratón, es decir, donde termina la figura.
- * @param p3 Punto auxiliar para figuras como la curva con punto, donde este punto sería
- * el punto de control.
- */
+    /**
+     * Crea un la figura con los atributos de trazo, relleno y color que hay
+     * en este instante seleccionados para la ventana donde estamos dibujando.
+     * 
+     * @param p1 punto con las coordenadas de la figura, para figuras como punto, o el comienzo
+     * de algunas figuras que necesitan más de un punto.
+     * @param p2 punto para las figuras de dos puntos, que sería el correspondiente donde
+     * deja de arrastrarse con el ratón, es decir, donde termina la figura.
+     * @param p3 Punto auxiliar para figuras como la curva con punto, donde este punto sería
+     * el punto de control.
+     */
     public void createShape(Point p1, Point p2, Point p3){
             switch (figura){
             case PUNTO:
@@ -393,10 +430,14 @@ public class Lienzo extends javax.swing.JPanel {
         }
         
     }
+    
     /**
      * Establece p como el x e y de origen de la figura.
      * Por el mal diseño de clases, hemos tenido que sobrecargar el método, por cada posiblidad
      * de selección.
+     * 
+     * @param s figura a la que cambiar la posicion
+     * @param p punto que será el nuevo origen
      */
     public void setLocation(Shape s, Point2D p){
         if(s instanceof Line2DI){
@@ -414,17 +455,22 @@ public class Lienzo extends javax.swing.JPanel {
         }
     }
     
-    /*Devuelve el shape que esta siendo seleccionado si p esta contenido o cerca de el */
+    /** 
+     * Devuelve la figura que esta siendo seleccionado si p esta contenido o cerca de el.
+     * 
+     * @param p1 punto al que se acerca la figura
+     * @return figura más cercana a dicho punto
+     */
     public Shape getSelectedShape(Point p1){
         if(this.editar){
-            if( vLine.size() != 0 ){
+            if( !vLine.isEmpty() ){
                     for(int i = vLine.size()-1; i >=0; i--) {
                             if(isNear((Line2DI)vLine.get(i),p1))
                                 return vLine.get(i);
                     }
                     
             }
-            if( vRectangle.size() != 0 ){
+            if( !vRectangle.isEmpty() ){
                     for(int i = vRectangle.size()-1; i >=0; i--) {
                             if( vRectangle.get(i).contains(p1))
                                 return vLine.get(i);
@@ -435,7 +481,14 @@ public class Lienzo extends javax.swing.JPanel {
         return null;
     }
     
-    /*Devuelve si un punto esta cerca de una linea lo suficiente*/
+    /**
+     * Devuelve si un punto esta cerca de una linea lo suficiente.
+     * 
+     * @param linea2 linea a la que puede estar cerca el punto
+     * @param p punto al que puede estar cerca la linea
+     * 
+     * @return si está lo suficientemente cerca o no.
+     */
     private boolean isNear(Line2DI linea2, Point2D p){
         double x = p.getX() - 1;
         double y = p.getY() - 1;
@@ -449,8 +502,6 @@ public class Lienzo extends javax.swing.JPanel {
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
-    
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -483,10 +534,21 @@ public class Lienzo extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /** Cuando se hace un click con el raton, se cambia el punto de click por el 
+     * nuevo click.
+     * 
+     * @param evt evento de raton con la información propia
+     */
     private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
         this.setClickPoint(evt.getPoint());
     }//GEN-LAST:event_formMouseClicked
-        
+    /** Cuando se hace un click con el raton, antes de comenzar el arrastre
+     * se cambia el punto de click por el nuevo click.
+     * Si se está estableciendo el punto de control de la curva, se asignan
+     * las coordenadas del click a dicho punto.
+     * 
+     * @param evt evento de raton con la información propia
+     */    
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
         this.setClickPoint(evt.getPoint());
         if(!buscaPunto){
@@ -494,15 +556,21 @@ public class Lienzo extends javax.swing.JPanel {
             this.pCurve.setLocation(pClick);
         }
         if(this.editar){
-            s = this.getSelectedShape(this.getClickPoint());
+            sp = this.getSelectedShape(this.getClickPoint());
         }
         repaint();
     }//GEN-LAST:event_formMousePressed
-
+    /** Cuando se suelta el arrastre del ratón, se asignan las coordenadas al
+     * punto de arrastre.
+     * Si se está estableciendo el punto de control de la curva, se asignan
+     * las coordenadas del click a dicho punto.
+     * 
+     * @param evt evento de raton con la información propia
+     */ 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
         this.setDragPoint(evt.getPoint());
         if(this.editar){
-                this.setLocation(s,this.getDragPoint());
+                this.setLocation(sp,this.getDragPoint());
         }
         else{
             this.updateShape(this.getClickPoint(), this.getDragPoint(),pCurve);
@@ -514,7 +582,13 @@ public class Lienzo extends javax.swing.JPanel {
         }
         repaint();
     }//GEN-LAST:event_formMouseReleased
-
+    /** Cuando se arrastra del ratón, se asignan las coordenadas al
+     * punto de arrastre.
+     * Si se está estableciendo el punto de control de la curva, se asignan
+     * las coordenadas del click a dicho punto.
+     * 
+     * @param evt evento de raton con la información propia
+     */
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
         this.setDragPoint(evt.getPoint());
         if(this.figura == CURVA_UN_PUNTO && buscaPunto)
@@ -522,7 +596,7 @@ public class Lienzo extends javax.swing.JPanel {
         if(!buscaPunto)
             this.updateShape(this.pClick, this.pDrag, this.pDrag);
         if(this.editar){
-                this.setLocation(s,this.getDragPoint());   
+                this.setLocation(sp,this.getDragPoint());   
         }
         else
             this.updateShape(this.pClick, this.pDrag, this.pCurve);

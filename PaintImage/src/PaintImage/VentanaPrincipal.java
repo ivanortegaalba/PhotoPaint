@@ -1,12 +1,8 @@
 
 package PaintImage;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Stroke;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
@@ -45,7 +41,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     */
     /** Imagen temporal para no acumular las modificaciones de brillo y umbral*/ 
     private BufferedImage srcImg; 
-    
+    public static final int MODO_IMAGEN = 0;
+    public static final int MODO_AUDIO = 1;
+    public static final int MODO_VIDEO = 2;
     /**Constructor por defecto*/
     public VentanaPrincipal() {
         initComponents();
@@ -68,7 +66,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         
         return imgOut; 
     } 
-    
+    public void setApariencia(int ap){
+        switch (ap){
+            case MODO_IMAGEN:
+                this.ImagenMenu.setVisible(true);
+                this.panelImagen.setVisible(true);
+                this.panelColor.setVisible(true);
+                
+        }
+    }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
@@ -88,7 +94,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         discontinuidadPanel = new javax.swing.JPanel();
         discontinuidadBox = new javax.swing.JComboBox();
         editarPanel = new javax.swing.JPanel();
-        editarButton = new javax.swing.JCheckBox();
+        editarButton = new javax.swing.JToggleButton();
         umbralizacionPanel = new javax.swing.JPanel();
         umbralSlider = new javax.swing.JSlider();
         jPanel2 = new javax.swing.JPanel();
@@ -132,6 +138,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         duplicarMenu = new javax.swing.JMenuItem();
         NegativoMenu = new javax.swing.JMenuItem();
         ColorConvertOpMenu = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -258,18 +265,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         editarPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Editar"));
         editarPanel.setLayout(new java.awt.BorderLayout());
 
-        editarButton.setBorder(javax.swing.BorderFactory.createTitledBorder("Editar"));
+        editarButton.setText("Modo Edición");
         editarButton.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 editarButtonStateChanged(evt);
             }
         });
-        editarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editarButtonActionPerformed(evt);
-            }
-        });
-        editarPanel.add(editarButton, java.awt.BorderLayout.CENTER);
+        editarPanel.add(editarButton, java.awt.BorderLayout.PAGE_START);
 
         panelImagen.add(editarPanel);
 
@@ -659,6 +661,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
         ImagenMenu.add(ColorConvertOpMenu);
 
+        jMenuItem2.setText("RGB desplazado");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        ImagenMenu.add(jMenuItem2);
+
         barraMenu.add(ImagenMenu);
 
         setJMenuBar(barraMenu);
@@ -670,7 +680,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     * Cuando el lapiz es elegido, cambia la forma a dibujar y la barra de estado
     * del lienzo correspondiente a la ventana seleccionada.
     * 
-    * @param evt información dle evento.
+    * @param evt información del evento.
     */
     private void lapizButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_lapizButtonStateChanged
         VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
@@ -686,7 +696,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     * Cuando la linea es elegida, cambia la forma a dibujar y la barra de estado
     * del lienzo correspondiente a la ventana seleccionada.
     * 
-    * @param evt información dle evento.
+    * @param evt información del evento.
     */
     private void lineaButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_lineaButtonStateChanged
         VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
@@ -702,7 +712,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     * Cuando el rectangulo es elegido, cambia la forma a dibujar y la barra de estado
     * del lienzo correspondiente a la ventana seleccionada.
     * 
-    * @param evt información dle evento.
+    * @param evt información del evento.
     */
     private void rectanguloButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rectanguloButtonStateChanged
         VentanaInternaImage vi;
@@ -718,7 +728,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     * Cuando el ovalo es elegido, cambia la forma a dibujar y la barra de estado
     * del lienzo correspondiente a la ventana seleccionada.
     * 
-    * @param evt información dle evento.
+    * @param evt información del evento.
     */
     private void ovaloButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ovaloButtonStateChanged
         VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
@@ -737,7 +747,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * Cuando la casilla está activada, muestra la barra de estado de la herramienta
      * seleccionada en ese mismo momento.
      * 
-     * @param evt información dle evento.
+     * @param evt información del evento.
      */
     private void verMenuStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_verMenuStateChanged
         if(this.verMenu.isSelected())
@@ -750,7 +760,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     * Abrirá cualquier tipo de archivo, y según su extensión, lo asociará 
     * a la ventana interna correspondiente, ya sea imagen, sonido, o video.
     * 
-    * @param evt información dle evento.
+    * @param evt información del evento.
     */
     @SuppressWarnings("null")
     private void abrirMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirMenuActionPerformed
@@ -824,7 +834,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     /**
     * Crea un nuevo lienzo en una nueva {@link VentanaInternaImage}.
     * 
-    * @param evt información dle evento.
+    * @param evt información del evento.
     */
     private void nuevoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevoMenuActionPerformed
         VentanaInternaImage vi = new VentanaInternaImage();
@@ -837,7 +847,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      * Guarda el contenido del lienzo, tanto las imagenes como los gráficos que hay en él
      * en formato jpg, en la ruta elegida.
      * 
-     * @param evt información dle evento.
+     * @param evt información del evento.
      */
     private void guardarMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarMenuActionPerformed
           // TODO add your handling code here:
@@ -866,7 +876,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     /**
     * Cambia el stroke asociado al lienzo con el nuevo grosor para la figura.
     * 
-    * @param evt información dle evento.
+    * @param evt información del evento.
     */
     private void grosorSpinStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_grosorSpinStateChanged
         VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
@@ -875,28 +885,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
         this.repaint();
     }//GEN-LAST:event_grosorSpinStateChanged
-    /**
-    * Activa la función editar, donde el usuario marcará y editará atributos
-    * de las figuras.
-    *
-    * 
-    * @param evt información dle evento.
-    */
-    private void editarButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_editarButtonStateChanged
-        VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
-        if(vi!=null){
-            if(this.editarButton.isSelected())
-                 vi.getLienzo().setEditar(true);
-             else
-                 vi.getLienzo().setEditar(false);
-         }
-        repaint();
-    }//GEN-LAST:event_editarButtonStateChanged
-    /**
+
+   /**
      * Antes de empezar a modificar el brillo, guardamos una copia de la 
      * imagen a modificar.
      * 
-     * @param evt información dle evento.
+     * @param evt información del evento.
      */
     private void brilloSliderFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_brilloSliderFocusGained
         VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame());
@@ -907,7 +901,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 /**
  * Destruimos la imagen guardada.
  * 
- * @param evt información dle evento.
+ * @param evt información del evento.
  */
     private void brilloSliderFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_brilloSliderFocusLost
         srcImg =null;
@@ -916,7 +910,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
  * Aplicamos el rescaleOp a la imagen, modificando así el brillo a la imagen
  * actualmente en el lienzo.
  * 
- * @param evt información dle evento.
+ * @param evt información del evento.
  */
     private void brilloSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_brilloSliderStateChanged
         VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame());
@@ -941,7 +935,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void convolveBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_convolveBoxActionPerformed
         
     }//GEN-LAST:event_convolveBoxActionPerformed
-
+/**
+     * Cuando cambiamos el tipo de filtro a aplicar, aplicamos el nuevo
+     * filtro seleccionado a la imagen de la ventana seleccionada.
+     * 
+     * @param evt información del evento.
+     */
     private void convolveBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_convolveBoxItemStateChanged
         VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame());
         if (vi != null) {
@@ -980,7 +979,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_convolveBoxItemStateChanged
-
+    /**
+     * Cambiamos el espacio de color de la imagen seleccionada.
+     * 
+     * @param evt información del evento.
+     */
     private void ColorConvertOpMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ColorConvertOpMenuActionPerformed
         VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame()); 
          if (vi != null) { 
@@ -1002,7 +1005,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         
         
     }//GEN-LAST:event_ColorConvertOpMenuActionPerformed
-
+    /**
+     * Aplicamos la mejora de contraste a la imagen seleccionada
+     * 
+     * @param evt información del evento.
+     */
     private void contrasteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_contrasteButtonActionPerformed
         VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame()); 
         if (vi != null) { 
@@ -1028,7 +1035,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             } 
         }
     }//GEN-LAST:event_contrasteButtonActionPerformed
-
+/**
+     * Giramos 270º la imagen seleccionada.
+     * 
+     * @param evt información del evento.
+     */
     private void doscientButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doscientButtonActionPerformed
         VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame()); 
          if (vi != null) { 
@@ -1440,10 +1451,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_discontinuidadBoxItemStateChanged
 
-    private void editarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_editarButtonActionPerformed
-
     private void ovaloButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ovaloButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_ovaloButtonActionPerformed
@@ -1456,6 +1463,34 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                  vi.getLienzo().setForma(Lienzo.CURVA_UN_PUNTO);
         }
     }//GEN-LAST:event_curvaQuadButtonItemStateChanged
+
+    private void editarButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_editarButtonStateChanged
+        VentanaInternaImage vi = (VentanaInternaImage)desktop.getSelectedFrame();
+        if(vi!=null){
+            if(this.editarButton.isSelected())
+                 vi.getLienzo().setEditar(true);
+             else
+                 vi.getLienzo().setEditar(false);
+         }
+        repaint();
+    }//GEN-LAST:event_editarButtonStateChanged
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        VentanaInternaImage vi = (VentanaInternaImage) (desktop.getSelectedFrame()); 
+         if (vi != null) { 
+            BufferedImage imgSource = vi.getLienzo().getImage(); 
+            if(imgSource!=null){ 
+                try{ 
+                    DespDchaRGBOpI neg = new DespDchaRGBOpI();
+                    BufferedImage imgdest = neg.filter(imgSource, null); 
+                    vi.getLienzo().setImage(imgdest);
+                    vi.getLienzo().repaint();
+                }catch(Exception e){ 
+                    System.err.println("Error al aplicar Affine"); 
+                } 
+            }
+        }        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1486,7 +1521,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton doscientButton;
     private javax.swing.JMenuItem duplicarMenu;
     private javax.swing.JMenu edicionMenu;
-    private javax.swing.JCheckBox editarButton;
+    private javax.swing.JToggleButton editarButton;
     private javax.swing.JPanel editarPanel;
     private javax.swing.JPanel escaladoPanel;
     private javax.swing.JPanel filtroBoxPanel;
@@ -1499,6 +1534,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.ButtonGroup herramientasGrupo;
     private javax.swing.JButton iluminacionButton;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToggleButton lapizButton;

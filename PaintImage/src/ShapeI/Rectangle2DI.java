@@ -13,7 +13,6 @@ import java.awt.geom.Rectangle2D;
  */
 public class Rectangle2DI extends Rectangle2D.Double{
     
-    
     Stroke st;
     Color colorBorde;
     Paint colorRelleno;
@@ -52,6 +51,7 @@ public class Rectangle2DI extends Rectangle2D.Double{
             this.colorRelleno = (Color)gr;
         }
     }
+    
     public void setColorBorde(Color c){
         this.colorBorde = c;
     }

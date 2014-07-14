@@ -6,9 +6,7 @@
 
 package ShapeI;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
@@ -26,7 +24,7 @@ public class Line2DI extends Line2D.Double{
     public Line2DI(Stroke st,Color color) {
         super();
         this.color = color;
-        this.st = st;;
+        this.st = st;
     }
     public Line2DI(Point p1, Point p2, Stroke st,Color color) {
         super(p1,p2);

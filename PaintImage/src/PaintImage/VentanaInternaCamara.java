@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package PaintImage;
 
@@ -10,32 +5,41 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import javax.media.Buffer;
+import javax.media.CannotRealizeException;
 import javax.media.CaptureDeviceInfo;
 import javax.media.CaptureDeviceManager;
 import javax.media.Manager;
 import javax.media.MediaLocator;
+import javax.media.NoPlayerException;
 import javax.media.Player;
 import javax.media.control.FrameGrabbingControl;
 import javax.media.format.VideoFormat;
 import javax.media.format.YUVFormat;
 import javax.media.util.BufferToImage;
-import org.netbeans.lib.awtextra.AbsoluteLayout;
 
 
 /**
- *
- * @author ivan
+ * Ventana que contendrá la captura de la webcam.
+ * Esta ventana visualizará la el flujo de imagen obtenido desde la webcam.
+ * 
+ * @author Ivan Ortega Alba
  */
 public class VentanaInternaCamara extends javax.swing.JInternalFrame {
 
     /**
-     * Creates new form VentanaInternaCamara
+     * Reproductor
      */
     Player p;
     
+    /**
+     * Constructor por defecto, el cual asignará la webcam disponible como fuente,
+     * y reproducirá las imagenes obtenidas en al ventana interna.
+     * Como puede dar errores la apertura de flujo, hemos declarado privado el contructor,
+     * y obtendremos el objeto mediante el método {@link VentanaInternaCamara.getInstance()}
+     */
     public VentanaInternaCamara() {
         initComponents();
         try { 
@@ -51,14 +55,25 @@ public class VentanaInternaCamara extends javax.swing.JInternalFrame {
             if(panelControl!=null) 
                 this.add(panelControl,BorderLayout.SOUTH); 
             
-            } catch(Exception e) {} 
+            } catch(IOException | CannotRealizeException | NoPlayerException e) {} 
     }
-    
+    /**
+     * Se encarga de crear una instancia mediante el contructor de la clase.
+     * 
+     * @see VentanaInternaCamara()
+     * @return devuelve una instancia de tipo {@link VentanaInternaCamara} 
+     */
     static public VentanaInternaCamara getInstance(){
         VentanaInternaCamara vic = new VentanaInternaCamara();
         return vic!=null?vic:null;
         
     }
+    /**
+     * Realiza una captura de pantalla de la imagen en reproducción de la 
+     * webcam y la almacena en un objeto de tipo {@link BufferedImage}.
+     * 
+     * @return imagen correspondiente a la captura de fotograma.
+     */
     public BufferedImage getFrame(){ 
         FrameGrabbingControl fgc; 
         String claseCtr = "javax.media.control.FrameGrabbingControl "; 
@@ -69,6 +84,7 @@ public class VentanaInternaCamara extends javax.swing.JInternalFrame {
         Image img = bti.createImage(bufferFrame); 
         return (BufferedImage)img; 
     }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

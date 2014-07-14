@@ -11,12 +11,26 @@ import java.awt.image.WritableRaster;
 import sm.image.*;
 
 /**
- *
- * @author ivan
+ *Aplica e filtro negativo a una imagen.
+ * Pixel a pixel, asigna el valor de cada banda del pixel a:
+ * p(r,g,b)=q(255-r,255-g,255-b)
+ * 
+ * @author Ivan Ortega Alba
+ * @version 15.07.2014
  */
 public class NegativoOp extends sm.image.BufferedImageOpAdapter{
     
     @Override
+    /**
+     * Aplica el negativo a una imagen y la transforma dando lugar a la misma con
+     * dicho filtro aplicado.
+     * 
+     * @param src imagen a la que aplicar el filtro
+     * @param dest imagen a la que asignar el resultado de aplicar el filtro. Puede
+     * ser null, y recoger la imagen devuelta.
+     * 
+     * @return imagen con el filtro ya aplicado.
+     */
     public BufferedImage filter(BufferedImage src, BufferedImage dest){ 
  
         if (dest == null) { 

@@ -7,15 +7,13 @@
 package PaintImage;
 
 import java.awt.Component;
-import java.awt.Graphics;
 import java.io.File;
+import java.io.IOException;
+import javax.media.CannotRealizeException;
 import javax.media.Manager;
 import javax.media.MediaLocator;
+import javax.media.NoPlayerException;
 import javax.media.Player;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineEvent.Type;
-import javax.sound.sampled.LineListener;
-import sm.sound.SMSoundPlayer;
 
 /**
  * Ventana donde se podrá reproducir audio de distintos formatos,
@@ -48,7 +46,7 @@ public class VentanaInternaPlayer extends javax.swing.JInternalFrame {
             if(panelControl!=null)  {
                 this.add(panelControl,java.awt.BorderLayout.SOUTH);
             }
-            } catch(Exception e) {} 
+            } catch(IOException | CannotRealizeException | NoPlayerException e) {} 
          
     }
 
